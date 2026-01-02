@@ -15,3 +15,9 @@ L.marker(iiitdm)
     .addTo(map)
     .bindPopup("IIITDM Kurnool Campus")
     .openPopup();
+
+
+map.on("click", function (e) {
+    alert("Latitude: " + e.latlng.lat + "\nLongitude: " + e.latlng.lng);
+});
+
