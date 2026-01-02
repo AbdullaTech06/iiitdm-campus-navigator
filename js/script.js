@@ -1,6 +1,6 @@
 
 // IIITDM Kurnool coordinates (approximate)
-const iiitdm = [15.8279, 78.0316];
+const iiitdm = [15.76121932151381, 78.03870039774452];
 
 // Create map
 const map = L.map("map").setView(iiitdm, 16);
