@@ -1,47 +1,65 @@
+// Initialize map at IIITDM Kurnool (approx coordinates)
+const map = L.map("map").setView([15.761821, 78.039614], 18);
 
-// IIITDM Kurnool coordinates (approximate)
-const iiitdm = [15.760660741729295,78.03753984103145];
-
-// Create map
-const map = L.map("map").setView(iiitdm, 16);
-
-// Add OpenStreetMap tiles
+// OpenStreetMap tiles
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors"
+  attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
-// Marker
-L.marker(iiitdm)
+let samples = [];
+let userMarker = null;
+let accuracyCircle = null;
+
+// Function to start GPS
+function startGPS() {
+  map.locate({
+    watch: true,
+    setView: true,
+    enableHighAccuracy: true,
+    timeout: 20000,
+    maximumAge: 0
+  });
+}
+
+// Location found
+map.on("locationfound", function (e) {
+
+  // Ignore poor accuracy
+  if (e.accuracy > 25) return;
+
+  samples.push(e.latlng);
+  if (samples.length > 8) samples.shift();
+
+  let avgLat = 0, avgLng = 0;
+  samples.forEach(p => {
+    avgLat += p.lat;
+    avgLng += p.lng;
+  });
+
+  avgLat /= samples.length;
+  avgLng /= samples.length;
+
+  const finalPos = [avgLat, avgLng];
+
+  if (userMarker) map.removeLayer(userMarker);
+  if (accuracyCircle) map.removeLayer(accuracyCircle);
+
+  userMarker = L.marker(finalPos)
     .addTo(map)
-    .bindPopup("IIITDM Kurnool Campus")
+    .bindPopup("📍 You are here")
     .openPopup();
 
-let userMarker = null;
-
-document.getElementById("locateBtn").addEventListener("click", function () {
-    if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(function (position) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-        const userLocation = [lat, lng];
-
-        if (userMarker) {
-            map.removeLayer(userMarker); // remove old marker
-        }
-
-        userMarker = L.marker(userLocation)
-            .addTo(map)
-            .bindPopup("📍 You are here")
-            .openPopup();
-
-        map.setView(userLocation, 18);
-    }, function () {
-        alert("Unable to get your location");
-    });
+  accuracyCircle = L.circle(finalPos, {
+    radius: e.accuracy,
+    color: "blue",
+    fillOpacity: 0.2
+  }).addTo(map);
 });
 
+// Error handling
+map.on("locationerror", function (e) {
+  alert("Location error: " + e.message);
+});
+
+// Button click
+document.getElementById("locateBtn").addEventListener("click", startGPS);
