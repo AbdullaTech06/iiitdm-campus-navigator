@@ -1,50 +1,72 @@
-// ================= SUPABASE =================
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
+// ===== SUPABASE CONFIG =====
 const SUPABASE_URL = "https://iistugxdqonjsrxuvpgs.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_w33IEM4ohCVNL__Z14grpg_DwJR6DJ4";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
-// ================= MAP SETUP =================
+// ===== CAMPUS MAP SETUP =====
 const campusCenter = [15.758844, 78.037691];
-const campusZoom = 18;
-
 const map = L.map("map", {
     center: campusCenter,
-    zoom: campusZoom,
+    zoom: 18,
     zoomControl: true,
     scrollWheelZoom: true
 });
 
+// OpenStreetMap tiles
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
     maxZoom: 19,
-    minZoom: 10
+    attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
-// ================= LOAD LOCATIONS =================
+// Campus center marker
+L.marker(campusCenter).addTo(map)
+    .bindPopup("<b>Campus Center</b>");
+
+// ===== LOAD BUILDINGS FROM SUPABASE =====
 async function loadCampusLocations() {
     const { data, error } = await supabase
-        .from("Location")   // EXACT table name
+        .from("Location")
         .select("*");
 
     if (error) {
-        console.error("Supabase error:", error.message);
+        console.error(error);
+        showError("Failed to load campus locations");
         return;
     }
 
     data.forEach(loc => {
         if (!loc.Lat || !loc.Lng) return;
 
-        const marker = L.marker([
-            Number(loc.Lat),
-            Number(loc.Lng)
-        ]).addTo(map);
+        const marker = L.circleMarker(
+            [loc.Lat, loc.Lng],
+            {
+                radius: 6,
+                color: "#dc3545",
+                fillColor: "#dc3545",
+                fillOpacity: 1,
+                weight: 2
+            }
+        ).addTo(map);
 
+        // Permanent building name label
+        marker.bindTooltip(
+            loc.Name,
+            {
+                permanent: true,
+                direction: "top",
+                offset: [0, -8],
+                className: "building-label"
+            }
+        );
+
+        // Optional popup
         marker.bindPopup(`
-            <b>${loc.Name}</b><br/>
-            <small>${loc.Category}</small><br/>
+            <b>${loc.Name}</b><br>
+            <small>${loc.Category}</small><br>
             ${loc.Description ?? ""}
         `);
     });
@@ -52,26 +74,22 @@ async function loadCampusLocations() {
 
 loadCampusLocations();
 
-// ================= LIVE LOCATION =================
+// ===== LIVE LOCATION TRACKING =====
+let watchId = null;
 let locationMarker = null;
 let locationCircle = null;
-let watchId = null;
 let isTracking = false;
 let tooltipShown = false;
 
 const LocateControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function () {
-        const container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+        const container = L.DomUtil.create("div", "leaflet-bar");
         const button = L.DomUtil.create("div", "leaflet-control-locate", container);
         button.innerHTML = "📍";
         button.title = "Show my location";
 
-        L.DomEvent.on(button, "click", e => {
-            L.DomEvent.stop(e);
-            toggleLocationTracking(button);
-        });
-
+        button.onclick = () => toggleLocationTracking(button);
         return container;
     }
 });
@@ -79,10 +97,11 @@ const LocateControl = L.Control.extend({
 map.addControl(new LocateControl());
 
 function toggleLocationTracking(button) {
-    isTracking ? stopLocationTracking(button) : startLocationTracking(button);
+    if (isTracking) stopTracking(button);
+    else startTracking(button);
 }
 
-function startLocationTracking(button) {
+function startTracking(button) {
     hideError();
 
     if (!navigator.geolocation) {
@@ -90,68 +109,61 @@ function startLocationTracking(button) {
         return;
     }
 
+    button.classList.add("active");
+    isTracking = true;
+
     if (!tooltipShown) {
         showTooltip();
         tooltipShown = true;
     }
 
-    button.classList.add("active");
-    isTracking = true;
-
     watchId = navigator.geolocation.watchPosition(
         onLocationSuccess,
         onLocationError,
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true }
     );
 }
 
-function stopLocationTracking(button) {
+function stopTracking(button) {
     if (watchId) navigator.geolocation.clearWatch(watchId);
-
     watchId = null;
     isTracking = false;
     button.classList.remove("active");
 
     if (locationMarker) map.removeLayer(locationMarker);
     if (locationCircle) map.removeLayer(locationCircle);
-
-    locationMarker = null;
-    locationCircle = null;
 }
 
-function onLocationSuccess(position) {
-    const { latitude, longitude, accuracy } = position.coords;
+function onLocationSuccess(pos) {
+    const { latitude, longitude, accuracy } = pos.coords;
 
     if (locationMarker) map.removeLayer(locationMarker);
     if (locationCircle) map.removeLayer(locationCircle);
 
-    locationCircle = L.circle([latitude, longitude], {
-        radius: accuracy,
-        color: "#dc3545",
-        fillOpacity: 0.1
-    }).addTo(map);
+    locationCircle = L.circle(
+        [latitude, longitude],
+        { radius: accuracy, color: "#dc3545", fillOpacity: 0.1 }
+    ).addTo(map);
 
-    locationMarker = L.circleMarker([latitude, longitude], {
-        radius: 8,
-        fillColor: "#dc3545",
-        color: "#fff",
-        weight: 2,
-        fillOpacity: 1
-    }).addTo(map);
+    locationMarker = L.circleMarker(
+        [latitude, longitude],
+        { radius: 8, color: "#fff", fillColor: "#dc3545", fillOpacity: 1, weight: 2 }
+    ).addTo(map)
+     .bindPopup("You are here");
 
-    locationMarker.bindPopup("You are here").openPopup();
     map.setView([latitude, longitude], map.getZoom());
 }
 
 function onLocationError() {
-    showError("Unable to access location");
+    showError("Unable to get your location");
 }
 
+// ===== UI HELPERS =====
 function showError(msg) {
     const el = document.getElementById("error-message");
     el.textContent = msg;
     el.classList.remove("hidden");
-    setTimeout(() => el.classList.add("hidden"), 5000);
+    setTimeout(hideError, 4000);
 }
 
 function hideError() {
