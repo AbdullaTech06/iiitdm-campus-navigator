@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Navigation</title>
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>IIITDM Campus Navigator</title>
+
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <h1>Campus Navigation</h1>
+
+    <header class="top-bar">
+        <h1>IIITDM Campus Navigator</h1>
+        <p>Navigate your campus with ease</p>
     </header>
 
-    <main>
-        <div id="map"></div>
-        <div id="error-message" class="hidden"></div>
-        <div id="location-tooltip" class="hidden">Location works best on mobile devices</div>
-    </main>
+    <div id="map"></div>
+
+    <div id="error-message" class="error hidden"></div>
+
+    <div id="location-tooltip" class="tooltip hidden">
+        Tap 📍 to show your live location
+    </div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Custom JS -->
-    <script src="script.js"></script>
+
+    <!-- Main JS -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
