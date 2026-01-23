@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
     <title>IIITDM Campus Navigator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Header -->
-    <header class="navbar">
+<header class="navbar">
+    <div class="title">
         <h1>IIITDM Campus Navigator</h1>
-        <p>Navigate your campus with ease</p>
+        <p>Find buildings. Navigate smart.</p>
+    </div>
 
-        <!-- Search -->
-        <input
-            type="text"
-            id="searchBox"
-            placeholder="Search building..."
-        />
-    </header>
+    <input type="text" id="searchBox" placeholder="Search building..." />
 
-    <!-- Map -->
-    <div id="map"></div>
+    <div id="filters"></div>
+</header>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
+<div id="map"></div>
+
+<button id="locateBtn">📍</button>
+<button id="clearRouteBtn" class="hidden">✖ Route</button>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
