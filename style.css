@@ -7,46 +7,92 @@
 
 /* Header */
 .navbar {
-    background-color: #dc3545;
+    background: #dc3545;
     color: white;
+    padding: 10px;
     text-align: center;
-    padding: 12px;
 }
 
-.navbar h1 {
-    font-size: 20px;
+.title h1 {
+    font-size: 18px;
     font-weight: 700;
 }
 
-.navbar p {
-    font-size: 13px;
+.title p {
+    font-size: 12px;
     opacity: 0.9;
-    margin-bottom: 8px;
 }
 
-/* Search */
 #searchBox {
-    width: 260px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    width: 250px;
     max-width: 90%;
-    padding: 8px 12px;
     border-radius: 6px;
     border: none;
     outline: none;
-    font-size: 14px;
+}
+
+#filters {
+    margin-top: 8px;
+}
+
+.filter-btn {
+    background: white;
+    color: #dc3545;
+    border: none;
+    padding: 4px 8px;
+    margin: 2px;
+    border-radius: 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background: #212529;
+    color: white;
 }
 
 /* Map */
 #map {
+    height: calc(100vh - 120px);
     width: 100%;
-    height: calc(100vh - 96px);
 }
 
-/* Building labels */
+/* Floating buttons */
+#locateBtn,
+#clearRouteBtn {
+    position: absolute;
+    right: 16px;
+    z-index: 1000;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+#locateBtn {
+    bottom: 30px;
+}
+
+#clearRouteBtn {
+    bottom: 90px;
+    font-size: 14px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Labels */
 .building-label {
     background: transparent;
     border: none;
     box-shadow: none;
-    color: #212529;
     font-size: 12px;
     font-weight: 600;
     pointer-events: none;
