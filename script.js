@@ -2,13 +2,9 @@
 // SUPABASE CONFIG
 // ===================
 const SUPABASE_URL = "https://iistugxdqonjsrxuvpgs.supabase.co";
-const SUPABASE_KEY =
-  "sb_publishable_w33IEM4ohCVNL__Z14grpg_DwJR6DJ4";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpc3R1Z3hkcW9uanNyeHV2cGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0NzYwOTcsImV4cCI6MjA1MzA1MjA5N30.w33IEM4ohCVNL__Z14grpg_DwJR6DJc4oN0VR2RacSE";
 
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ===================
 // MAP INIT
@@ -47,8 +43,7 @@ document.getElementById("liveBtn").addEventListener("click", () => {
       } else {
         userMarker = L.marker(userLatLng, {
           icon: L.icon({
-            iconUrl:
-              "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+            iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
             iconSize: [35, 35],
           }),
         })
@@ -58,7 +53,10 @@ document.getElementById("liveBtn").addEventListener("click", () => {
 
       map.setView(userLatLng, 18);
     },
-    () => alert("Location permission denied")
+    (error) => {
+      console.error("Geolocation error:", error);
+      alert("Location permission denied");
+    }
   );
 });
 
@@ -81,7 +79,12 @@ async function loadLocations() {
     .select("*");
 
   if (error) {
-    console.error(error);
+    console.error("Error loading locations:", error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    console.log("No locations found in database");
     return;
   }
 
@@ -137,7 +140,7 @@ window.navigateTo = function (lat, lng) {
     draggableWaypoints: false,
     show: false,
     lineOptions: {
-      styles: [{ weight: 6 }],
+      styles: [{ color: "#2563eb", weight: 6 }],
     },
   }).addTo(map);
 };
