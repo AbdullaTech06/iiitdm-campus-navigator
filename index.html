@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IIITDM Campus Navigator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Leaflet CSS -->
     <link
@@ -12,28 +12,27 @@
     />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<header class="top-bar">
-    <h1>IIITDM Campus Navigator</h1>
-    <p>Navigate your campus with ease</p>
-</header>
+    <!-- Header -->
+    <header class="navbar">
+        <h1>IIITDM Campus Navigator</h1>
+        <p>Navigate your campus with ease</p>
+    </header>
 
-<div id="map"></div>
+    <!-- Map -->
+    <div id="map"></div>
 
-<div id="error-message" class="hidden"></div>
-<div id="location-tooltip" class="hidden">Showing your live location</div>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Supabase JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- App JS -->
-<script src="script.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
 
 </body>
 </html>
