@@ -5,6 +5,11 @@
   font-family: system-ui, sans-serif;
 }
 
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
 body {
   background: #0f172a;
 }
@@ -34,15 +39,13 @@ body {
   font-size: 14px;
   font-weight: 600;
   box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-  transition: transform 0.2s, background 0.2s;
 }
 
 #controls button:hover {
   background: #1d4ed8;
-  transform: translateY(-2px);
 }
 
-/* Building name label */
+/* Building name labels */
 .building-label {
   background: transparent;
   border: none;
