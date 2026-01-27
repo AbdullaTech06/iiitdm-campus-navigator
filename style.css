@@ -2,11 +2,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 html, body {
   height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -16,11 +17,92 @@ body {
 #map {
   height: 100vh;
   width: 100vw;
+  z-index: 1;
 }
 
+/* =================== */
+/* SEARCH BAR */
+/* =================== */
+#searchContainer {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  width: 90%;
+  max-width: 500px;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  outline: none;
+  transition: all 0.3s;
+}
+
+#searchInput:focus {
+  box-shadow: 0 10px 40px rgba(37, 99, 235, 0.4);
+  transform: translateY(-2px);
+}
+
+#searchResults {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+}
+
+.search-result-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+}
+
+.search-result-item:hover {
+  background: #f8fafc;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+/* Custom scrollbar for search results */
+#searchResults::-webkit-scrollbar {
+  width: 8px;
+}
+
+#searchResults::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+#searchResults::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+#searchResults::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* =================== */
+/* CONTROL BUTTONS */
+/* =================== */
 #controls {
   position: absolute;
-  top: 12px;
+  top: 90px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
@@ -29,7 +111,7 @@ body {
 }
 
 #controls button {
-  padding: 10px 14px;
+  padding: 10px 18px;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -37,25 +119,264 @@ body {
   color: white;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s;
 }
 
 #controls button:hover {
   background: #1d4ed8;
   transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
 }
+
+#controls button:active {
+  transform: translateY(0);
+}
+
+/* =================== */
+/* INFO PANEL */
+/* =================== */
+#infoPanel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+}
+
+#infoPanel h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #1e293b;
+}
+
+#infoPanel p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* =================== */
+/* MAP ELEMENTS */
+/* =================== */
 
 /* Hide routing panel */
 .leaflet-routing-container {
+  display: none !important;
+}
+
+.leaflet-routing-alt {
+  display: none !important;
+}
+
+/* Building label styling */
+.building-label {
+  background: transparent !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+/* Custom marker */
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* User location marker */
+.user-location-marker {
+  background: transparent !important;
+  border: none !important;
+  font-size: 24px;
+  text-align: center;
+  line-height: 30px;
+}
+
+/* Pulse animation for user marker */
+.pulse-marker {
+  animation: pulse 2s infinite;
+  filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.6));
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Custom popup styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+  margin: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.leaflet-popup-tip {
+  background: white;
+}
+
+.leaflet-popup-close-button {
+  font-size: 20px !important;
+  padding: 8px 12px !important;
+}
+
+/* Improve marker visibility */
+.leaflet-marker-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Route line styling */
+.leaflet-routing-container-hide {
   display: none;
 }
 
-/* Building label */
-.building-label {
-  background: transparent;
-  border: none;
-  font-weight: 700;
-  font-size: 13px;
-  text-shadow: 0 0 6px white;
+/* =================== */
+/* MOBILE RESPONSIVE */
+/* =================== */
+@media (max-width: 768px) {
+  #searchContainer {
+    width: 95%;
+    top: 15px;
+  }
+
+  #searchInput {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  #searchResults {
+    top: 55px;
+    max-height: 300px;
+  }
+
+  #controls {
+    top: 75px;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  #controls button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .building-label span {
+    font-size: 10px !important;
+    padding: 1px 6px !important;
+  }
+
+  #infoPanel {
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    max-width: none;
+    padding: 12px 16px;
+  }
+
+  #infoPanel h3 {
+    font-size: 14px;
+  }
+
+  #infoPanel p {
+    font-size: 12px;
+  }
+
+  .leaflet-popup-content-wrapper {
+    max-width: 240px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #controls {
+    flex-direction: column;
+    gap: 6px;
+    width: 90%;
+  }
+
+  #controls button {
+    width: 100%;
+    padding: 10px 12px;
+  }
+}
+
+/* =================== */
+/* LOADING ANIMATION */
+/* =================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-result-item {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* =================== */
+/* SCROLLBAR STYLING */
+/* =================== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* =================== */
+/* ACCESSIBILITY */
+/* =================== */
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  #controls button {
+    border: 2px solid white;
+  }
+  
+  .building-label span {
+    border: 2px solid black !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
