@@ -3,37 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <title>IIITDM Campus Navigator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Routing -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+  <!-- Search -->
+  <div id="searchContainer">
+    <input id="searchInput" type="text" placeholder="🔍 Search locations..." />
+    <div id="searchResults"></div>
+  </div>
+
+  <!-- Controls -->
   <div id="controls">
-    <button id="liveBtn">📍 Live Location</button>
-    <button id="cancelLiveBtn">🛑 Cancel Live</button>
+    <button id="liveBtn">📍 Start Live</button>
+    <button id="stopLiveBtn">⛔ Stop Live</button>
     <button id="cancelRouteBtn">❌ Cancel Route</button>
   </div>
 
+  <!-- Map -->
   <div id="map"></div>
+
+  <!-- Info -->
+  <div id="infoPanel">
+    <h3>🏛️ IIITDM Navigator</h3>
+    <p>Loading locations…</p>
+  </div>
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="script.js"></script>
+
 </body>
 </html>
