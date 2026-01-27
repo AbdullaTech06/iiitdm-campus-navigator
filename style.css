@@ -21,7 +21,7 @@ body {
 }
 
 /* =================== */
-/* SEARCH BAR */
+/* SEARCH BAR (RED THEME) */
 /* =================== */
 #searchContainer {
   position: absolute;
@@ -46,8 +46,9 @@ body {
 }
 
 #searchInput:focus {
-  box-shadow: 0 10px 40px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 10px 40px rgba(220, 38, 38, 0.4);
   transform: translateY(-2px);
+  border: 2px solid #dc2626;
 }
 
 #searchResults {
@@ -71,7 +72,7 @@ body {
 }
 
 .search-result-item:hover {
-  background: #f8fafc;
+  background: #fef2f2;
 }
 
 .search-result-item:last-child {
@@ -89,16 +90,16 @@ body {
 }
 
 #searchResults::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #fca5a5;
   border-radius: 10px;
 }
 
 #searchResults::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #f87171;
 }
 
 /* =================== */
-/* CONTROL BUTTONS */
+/* CONTROL BUTTONS (RED THEME) */
 /* =================== */
 #controls {
   position: absolute;
@@ -115,18 +116,18 @@ body {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  background: #2563eb;
+  background: #dc2626;
   color: white;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
   transition: all 0.2s;
 }
 
 #controls button:hover {
-  background: #1d4ed8;
+  background: #b91c1c;
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 12px 24px rgba(220, 38, 38, 0.5);
 }
 
 #controls button:active {
@@ -134,7 +135,7 @@ body {
 }
 
 /* =================== */
-/* INFO PANEL */
+/* INFO PANEL (RED THEME) */
 /* =================== */
 #infoPanel {
   position: absolute;
@@ -145,13 +146,14 @@ body {
   padding: 16px 20px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  max-width: 300px;
+  max-width: 320px;
+  border-left: 4px solid #dc2626;
 }
 
 #infoPanel h3 {
   font-size: 16px;
   margin-bottom: 6px;
-  color: #1e293b;
+  color: #dc2626;
 }
 
 #infoPanel p {
@@ -186,7 +188,7 @@ body {
   border: none !important;
 }
 
-/* User location marker */
+/* User location marker (red theme) */
 .user-location-marker {
   background: transparent !important;
   border: none !important;
@@ -195,10 +197,10 @@ body {
   line-height: 30px;
 }
 
-/* Pulse animation for user marker */
+/* Pulse animation for user marker (red theme) */
 .pulse-marker {
   animation: pulse 2s infinite;
-  filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.6));
+  filter: drop-shadow(0 2px 8px rgba(220, 38, 38, 0.6));
 }
 
 @keyframes pulse {
@@ -212,11 +214,12 @@ body {
   }
 }
 
-/* Custom popup styling */
+/* Custom popup styling (red theme) */
 .leaflet-popup-content-wrapper {
   border-radius: 12px;
   padding: 0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.15);
+  border-top: 3px solid #dc2626;
 }
 
 .leaflet-popup-content {
@@ -232,16 +235,26 @@ body {
 .leaflet-popup-close-button {
   font-size: 20px !important;
   padding: 8px 12px !important;
+  color: #dc2626 !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #b91c1c !important;
 }
 
 /* Improve marker visibility */
 .leaflet-marker-icon {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));
 }
 
 /* Route line styling */
 .leaflet-routing-container-hide {
   display: none;
+}
+
+/* Accuracy circle styling (handled in JS but additional CSS) */
+.leaflet-interactive {
+  pointer-events: auto;
 }
 
 /* =================== */
@@ -276,7 +289,7 @@ body {
 
   .building-label span {
     font-size: 10px !important;
-    padding: 1px 6px !important;
+    padding: 2px 6px !important;
   }
 
   #infoPanel {
@@ -340,16 +353,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #fee2e2;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #fca5a5;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #f87171;
 }
 
 /* =================== */
@@ -357,7 +370,7 @@ body {
 /* =================== */
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid #2563eb;
+  outline: 3px solid #dc2626;
   outline-offset: 2px;
 }
 
@@ -368,7 +381,7 @@ input:focus-visible {
   }
   
   .building-label span {
-    border: 2px solid black !important;
+    border: 2px solid #dc2626 !important;
   }
 }
 
@@ -379,4 +392,26 @@ input:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* =================== */
+/* ADDITIONAL RED THEME ACCENTS */
+/* =================== */
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  color: #dc2626 !important;
+}
+
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
+  background: #fef2f2 !important;
+}
+
+/* Attribution link colors */
+.leaflet-control-attribution a {
+  color: #dc2626 !important;
+}
+
+.leaflet-control-attribution a:hover {
+  color: #b91c1c !important;
 }
