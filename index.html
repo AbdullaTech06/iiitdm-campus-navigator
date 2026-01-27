@@ -4,37 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IIITDM Campus Navigator</title>
-
   <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
-
   <!-- Leaflet Routing -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
   />
-
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <!-- Search Bar -->
+  <div id="searchContainer">
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="🔍 Search for buildings, hostels, departments..."
+    />
+    <div id="searchResults"></div>
+  </div>
 
+  <!-- Control Buttons -->
   <div id="controls">
     <button id="liveBtn">📍 Live Location</button>
     <button id="clearRouteBtn">❌ Cancel Route</button>
   </div>
 
+  <!-- Map Container -->
   <div id="map"></div>
+
+  <!-- Info Panel (Optional) -->
+  <div id="infoPanel">
+    <h3>🏛️ IIITDM Kurnool Navigator</h3>
+    <p>Click on markers or search for locations to navigate</p>
+  </div>
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="script.js"></script>
 </body>
 </html>
