@@ -1,151 +1,172 @@
-document.addEventListener("DOMContentLoaded", () => {
+// ================== SUPABASE ==================
+const supabaseUrl = "https://iistugxdqonjsrxuvpgs.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpc3R1Z3hkcW9uanNyeHV2cGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE5MzAsImV4cCI6MjA4Mjg1NzkzMH0.QFZKAZnFc-6jrCaOUs0ghAW227OXN1Y2XevOC3BUVX4";
 
-  /* ===== SUPABASE ===== */
-  const SUPABASE_URL = "https://iistugxdqonjsrxuvpgs.supabase.co";
-  const SUPABASE_KEY = "PASTE_YOUR_ANON_KEY_HERE"; // <-- YOUR REAL KEY
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+// ================== MAP ==================
+const map = L.map("map", {
+  center: [15.759267, 78.037734],
+  zoom: 17,
+  minZoom: 15,
+  maxZoom: 19
+});
 
-  /* ===== MAP ===== */
-  const map = L.map("map").setView([15.759267, 78.037734], 17);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap"
+}).addTo(map);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap"
-  }).addTo(map);
+// ================== GLOBALS ==================
+let locations = [];
+let markers = [];
+let userMarker = null;
+let accuracyCircle = null;
+let watchId = null;
+let routingControl = null;
+let destination = null;
 
-  /* ===== STATE ===== */
-  let locations = [];
-  let userMarker = null;
-  let watchId = null;
-  let routingControl = null;
-  let destination = null;
+// ================== FETCH LOCATIONS ==================
+async function loadLocations() {
+  const { data, error } = await supabase.from("Location").select("*");
 
-  /* ===== LOAD LOCATIONS ===== */
-  async function loadLocations() {
-    const { data, error } = await supabase
-      .from("Location")
-      .select("Name, Lat, Lng, Category, Description");
+  if (error) {
+    alert("Failed to load locations");
+    return;
+  }
 
-    if (error) {
-      document.getElementById("infoPanel").innerHTML =
-        "<p>❌ Failed to load locations</p>";
-      return;
-    }
+  locations = data;
+  addMarkers();
+}
 
-    locations = data;
+function addMarkers() {
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
 
-    data.forEach(loc => {
-      const marker = L.circleMarker([loc.Lat, loc.Lng], {
-        radius: 6,
-        color: "#dc2626",
+  locations.forEach(loc => {
+    const marker = L.circleMarker([loc.Lat, loc.Lng], {
+      radius: 8,
+      color: "#dc2626",
+      fillColor: "#ef4444",
+      fillOpacity: 0.9
+    }).addTo(map);
+
+    marker.bindPopup(`
+      <b>${loc.Name}</b><br/>
+      ${loc.Category}<br/>
+      ${loc.Description}<br/><br/>
+      <button onclick="navigateTo(${loc.Lat}, ${loc.Lng})">
+        🚗 Show Route
+      </button>
+    `);
+
+    markers.push(marker);
+  });
+}
+
+// ================== SEARCH ==================
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.toLowerCase();
+  searchResults.innerHTML = "";
+
+  if (!q) return;
+
+  locations
+    .filter(l =>
+      l.Name.toLowerCase().includes(q) ||
+      l.Category.toLowerCase().includes(q) ||
+      l.Description.toLowerCase().includes(q)
+    )
+    .forEach(l => {
+      const div = document.createElement("div");
+      div.className = "result-item";
+      div.textContent = l.Name;
+      div.onclick = () => {
+        map.flyTo([l.Lat, l.Lng], 18);
+        searchResults.innerHTML = "";
+      };
+      searchResults.appendChild(div);
+    });
+});
+
+// ================== LIVE LOCATION ==================
+document.getElementById("liveBtn").onclick = () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  watchId = navigator.geolocation.watchPosition(pos => {
+    const latlng = [pos.coords.latitude, pos.coords.longitude];
+
+    if (!userMarker) {
+      userMarker = L.circleMarker(latlng, {
+        radius: 8,
+        color: "#b91c1c",
         fillColor: "#ef4444",
         fillOpacity: 1
       }).addTo(map);
 
-      marker.bindPopup(`
-        <b>${loc.Name}</b><br>
-        <small>${loc.Category || ""}</small><br>
-        <p>${loc.Description || ""}</p>
-        <button onclick="startRoute(${loc.Lat}, ${loc.Lng})"
-          style="margin-top:6px;padding:6px 10px;background:#dc2626;color:white;border:none;border-radius:6px">
-          🧭 Navigate
-        </button>
-      `);
-    });
-
-    document.getElementById("infoPanel").innerHTML =
-      `<p>${data.length} locations loaded</p>`;
-  }
-
-  loadLocations();
-
-  /* ===== SEARCH ===== */
-  const searchInput = document.getElementById("searchInput");
-  const searchResults = document.getElementById("searchResults");
-
-  searchInput.addEventListener("input", () => {
-    const q = searchInput.value.toLowerCase();
-    if (q.length < 2) {
-      searchResults.style.display = "none";
-      return;
+      accuracyCircle = L.circle(latlng, {
+        radius: pos.coords.accuracy,
+        color: "#ef4444",
+        fillOpacity: 0.2
+      }).addTo(map);
+    } else {
+      userMarker.setLatLng(latlng);
+      accuracyCircle.setLatLng(latlng);
+      accuracyCircle.setRadius(pos.coords.accuracy);
     }
 
-    const matches = locations.filter(l =>
-      l.Name.toLowerCase().includes(q) ||
-      (l.Category || "").toLowerCase().includes(q)
-    );
-
-    searchResults.innerHTML = matches.map(l => `
-      <div class="search-item"
-        onclick="focusLocation(${l.Lat}, ${l.Lng})">
-        <b>${l.Name}</b><br>
-        <small>${l.Category || ""}</small>
-      </div>
-    `).join("");
-
-    searchResults.style.display = "block";
+    if (destination) updateRoute(latlng, destination);
   });
+};
 
-  window.focusLocation = (lat, lng) => {
-    map.setView([lat, lng], 18);
-    searchResults.style.display = "none";
-  };
+document.getElementById("stopLiveBtn").onclick = () => {
+  if (watchId) navigator.geolocation.clearWatch(watchId);
+  watchId = null;
 
-  /* ===== LIVE LOCATION ===== */
-  document.getElementById("liveBtn").onclick = () => {
-    if (watchId) return;
+  if (userMarker) map.removeLayer(userMarker);
+  if (accuracyCircle) map.removeLayer(accuracyCircle);
 
-    watchId = navigator.geolocation.watchPosition(pos => {
-      const latlng = [pos.coords.latitude, pos.coords.longitude];
+  userMarker = null;
+  accuracyCircle = null;
+};
 
-      if (!userMarker) {
-        userMarker = L.marker(latlng).addTo(map);
-      } else {
-        userMarker.setLatLng(latlng);
-      }
+// ================== ROUTING ==================
+window.navigateTo = (lat, lng) => {
+  destination = [lat, lng];
 
-      if (destination) updateRoute(latlng, destination);
-    });
-  };
-
-  document.getElementById("stopLiveBtn").onclick = () => {
-    if (watchId) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-    }
-    if (userMarker) {
-      map.removeLayer(userMarker);
-      userMarker = null;
-    }
-  };
-
-  /* ===== ROUTING ===== */
-  window.startRoute = (lat, lng) => {
-    if (!userMarker) {
-      alert("Start live location first");
-      return;
-    }
-    destination = [lat, lng];
-    updateRoute(userMarker.getLatLng(), destination);
-  };
-
-  function updateRoute(from, to) {
-    if (routingControl) map.removeControl(routingControl);
-
-    routingControl = L.Routing.control({
-      waypoints: [L.latLng(from), L.latLng(to)],
-      lineOptions: { styles: [{ color: "#dc2626", weight: 6 }] },
-      createMarker: () => null
-    }).addTo(map);
+  if (!userMarker) {
+    alert("Enable live location first");
+    return;
   }
 
-  document.getElementById("cancelRouteBtn").onclick = () => {
-    if (routingControl) map.removeControl(routingControl);
-    routingControl = null;
-    destination = null;
-  };
+  updateRoute(userMarker.getLatLng(), destination);
+};
 
-});
+function updateRoute(start, end) {
+  if (routingControl) map.removeControl(routingControl);
+
+  routingControl = L.Routing.control({
+    waypoints: [start, end],
+    lineOptions: {
+      styles: [{ color: "#dc2626", weight: 5 }]
+    },
+    addWaypoints: false,
+    draggableWaypoints: false,
+    fitSelectedRoutes: true,
+    show: false
+  }).addTo(map);
+}
+
+document.getElementById("cancelRouteBtn").onclick = () => {
+  if (routingControl) map.removeControl(routingControl);
+  routingControl = null;
+  destination = null;
+};
+
+// ================== INIT ==================
+loadLocations();
