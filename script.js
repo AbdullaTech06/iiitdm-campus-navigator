@@ -3,81 +3,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // SUPABASE CONFIG
   // ===================
   const SUPABASE_URL = "https://iistugxdqonjsrxuvpgs.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpc3R1Z3hkcW9uanNyeHV2cGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5NzI2ODMsImV4cCI6MjA1MzU0ODY4M30.YOUR_KEY_HERE";
+  const SUPABASE_KEY = "sb_publishable_w33IEM4ohCVNL__Z14grpg_DwJR6DJ4";
   
   let supabase = null;
   try {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log("✅ Supabase connected");
   } catch (error) {
-    console.error("Supabase initialization error:", error);
+    console.error("❌ Supabase initialization error:", error);
   }
 
   // ===================
-  // COMPREHENSIVE CAMPUS DATA
+  // MAP INIT (Center coordinates hidden)
   // ===================
-  const campusLocations = [
-    // Academic Buildings
-    { name: "Main Academic Block", lat: 15.7695, lng: 78.0664, description: "Central Academic Building", category: "academic" },
-    { name: "Academic Block A", lat: 15.7692, lng: 78.0666, description: "Lecture Halls 1-10", category: "academic" },
-    { name: "Academic Block B", lat: 15.7698, lng: 78.0662, description: "Lecture Halls 11-20", category: "academic" },
-    { name: "Computer Science Department", lat: 15.7690, lng: 78.0668, description: "CS Labs & Faculty Offices", category: "department" },
-    { name: "Electronics Department", lat: 15.7693, lng: 78.0670, description: "ECE Labs & Workshops", category: "department" },
-    { name: "Mechanical Department", lat: 15.7688, lng: 78.0665, description: "ME Labs & Workshops", category: "department" },
-    
-    // Library & Study Areas
-    { name: "Central Library", lat: 15.7700, lng: 78.0670, description: "Main Library - 24x7 Reading Hall", category: "library" },
-    { name: "Digital Library", lat: 15.7701, lng: 78.0671, description: "E-Resources & Digital Collection", category: "library" },
-    
-    // Hostels
-    { name: "Boys Hostel A", lat: 15.7690, lng: 78.0660, description: "UG Boys Hostel Block A", category: "hostel" },
-    { name: "Boys Hostel B", lat: 15.7687, lng: 78.0658, description: "UG Boys Hostel Block B", category: "hostel" },
-    { name: "Boys Hostel C", lat: 15.7684, lng: 78.0662, description: "PG Boys Hostel", category: "hostel" },
-    { name: "Girls Hostel A", lat: 15.7703, lng: 78.0658, description: "UG Girls Hostel Block A", category: "hostel" },
-    { name: "Girls Hostel B", lat: 15.7706, lng: 78.0660, description: "PG Girls Hostel", category: "hostel" },
-    
-    // Dining & Food
-    { name: "Main Cafeteria", lat: 15.7698, lng: 78.0668, description: "Central Dining Hall", category: "dining" },
-    { name: "Food Court", lat: 15.7696, lng: 78.0669, description: "Multiple Food Stalls", category: "dining" },
-    { name: "Juice Center", lat: 15.7697, lng: 78.0667, description: "Fresh Juices & Snacks", category: "dining" },
-    { name: "Boys Hostel Mess", lat: 15.7689, lng: 78.0659, description: "Hostel Dining", category: "dining" },
-    { name: "Girls Hostel Mess", lat: 15.7704, lng: 78.0659, description: "Hostel Dining", category: "dining" },
-    
-    // Sports & Recreation
-    { name: "Sports Complex", lat: 15.7680, lng: 78.0655, description: "Indoor Sports Facilities", category: "sports" },
-    { name: "Cricket Ground", lat: 15.7675, lng: 78.0660, description: "Main Cricket Ground", category: "sports" },
-    { name: "Football Ground", lat: 15.7677, lng: 78.0665, description: "Football Field", category: "sports" },
-    { name: "Basketball Court", lat: 15.7682, lng: 78.0658, description: "Outdoor Basketball", category: "sports" },
-    { name: "Volleyball Court", lat: 15.7683, lng: 78.0659, description: "Outdoor Volleyball", category: "sports" },
-    { name: "Gymnasium", lat: 15.7681, lng: 78.0656, description: "Fitness Center", category: "sports" },
-    
-    // Administration
-    { name: "Administrative Block", lat: 15.7702, lng: 78.0666, description: "Director's Office & Admin", category: "admin" },
-    { name: "Accounts Office", lat: 15.7703, lng: 78.0667, description: "Fee Payment & Finance", category: "admin" },
-    { name: "Academic Section", lat: 15.7701, lng: 78.0665, description: "Exam Cell & Records", category: "admin" },
-    
-    // Medical & Wellness
-    { name: "Medical Center", lat: 15.7694, lng: 78.0672, description: "Campus Health Center", category: "medical" },
-    { name: "Pharmacy", lat: 15.7695, lng: 78.0673, description: "Medical Store", category: "medical" },
-    
-    // Other Facilities
-    { name: "Auditorium", lat: 15.7699, lng: 78.0664, description: "Main Auditorium - 500 Capacity", category: "facility" },
-    { name: "Seminar Hall", lat: 15.7697, lng: 78.0663, description: "Seminar & Conference Hall", category: "facility" },
-    { name: "Workshop", lat: 15.7686, lng: 78.0663, description: "Engineering Workshop", category: "facility" },
-    { name: "Guest House", lat: 15.7708, lng: 78.0668, description: "Visitor Accommodation", category: "facility" },
-    { name: "Gate 1 - Main Entrance", lat: 15.7710, lng: 78.0665, description: "Primary Campus Entrance", category: "entrance" },
-    { name: "Gate 2 - Side Entrance", lat: 15.7672, lng: 78.0670, description: "Secondary Entrance", category: "entrance" },
-    { name: "Parking Area", lat: 15.7705, lng: 78.0663, description: "Vehicle Parking", category: "facility" },
-    { name: "ATM", lat: 15.7696, lng: 78.0665, description: "Bank ATM", category: "facility" },
-    { name: "Stationery Shop", lat: 15.7697, lng: 78.0666, description: "Books & Stationery", category: "facility" },
-  ];
-
-  // ===================
-  // MAP INIT
-  // ===================
-  const map = L.map("map").setView(
-    [15.7695, 78.0664], // IIITDM Kurnool
-    16
-  );
+  const mapCenter = [15.759267, 78.037734];
+  
+  const map = L.map("map", {
+    minZoom: 15,
+    maxZoom: 19
+  }).setView(mapCenter, 17);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -85,54 +29,76 @@ document.addEventListener("DOMContentLoaded", () => {
   }).addTo(map);
 
   let userMarker = null;
+  let accuracyCircle = null;
   let routingControl = null;
   let userLatLng = null;
   let allMarkers = [];
   let allLocations = [];
 
-  // Category colors
+  // ===================
+  // RED THEME COLORS
+  // ===================
   const categoryColors = {
-    academic: "#3b82f6",
-    department: "#8b5cf6",
-    library: "#10b981",
-    hostel: "#f59e0b",
-    dining: "#ef4444",
-    sports: "#06b6d4",
-    admin: "#6366f1",
-    medical: "#ec4899",
-    facility: "#84cc16",
-    entrance: "#f97316"
+    academic: "#dc2626",
+    department: "#ef4444",
+    library: "#f87171",
+    hostel: "#fb923c",
+    dining: "#dc2626",
+    sports: "#b91c1c",
+    admin: "#991b1b",
+    medical: "#fca5a5",
+    facility: "#ef4444",
+    entrance: "#f97316",
+    default: "#dc2626"
   };
 
   // ===================
-  // LIVE LOCATION
+  // LIVE LOCATION WITH ACCURACY CIRCLE
   // ===================
   document.getElementById("liveBtn").addEventListener("click", () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported by your browser");
       return;
     }
+    
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         userLatLng = [pos.coords.latitude, pos.coords.longitude];
-        if (!userMarker) {
-          userMarker = L.marker(userLatLng, {
-            icon: L.divIcon({
-              className: "user-location-marker",
-              html: '<div class="pulse-marker">📍</div>',
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
-            }),
-          }).addTo(map);
-        } else {
-          userMarker.setLatLng(userLatLng);
+        const accuracy = pos.coords.accuracy;
+
+        // Remove old marker and circle
+        if (userMarker) {
+          map.removeLayer(userMarker);
         }
-        map.setView(userLatLng, 17);
+        if (accuracyCircle) {
+          map.removeLayer(accuracyCircle);
+        }
+
+        // Add accuracy circle (red theme)
+        accuracyCircle = L.circle(userLatLng, {
+          color: "#dc2626",
+          fillColor: "#ef4444",
+          fillOpacity: 0.15,
+          weight: 2,
+          radius: accuracy
+        }).addTo(map);
+
+        // Add user marker
+        userMarker = L.marker(userLatLng, {
+          icon: L.divIcon({
+            className: "user-location-marker",
+            html: '<div class="pulse-marker">📍</div>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
+          }),
+        }).addTo(map);
+
+        map.setView(userLatLng, 18);
         
         // Update info panel
         document.getElementById("infoPanel").innerHTML = `
           <h3>✅ Location Enabled</h3>
-          <p>You can now navigate to any location</p>
+          <p>Accuracy: ${Math.round(accuracy)}m • You can now navigate</p>
         `;
       },
       (error) => {
@@ -162,56 +128,73 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===================
-  // LOAD LOCATIONS
+  // LOAD LOCATIONS FROM SUPABASE
   // ===================
   async function loadLocations() {
     let locations = [];
     
-    // Try to load from Supabase
     if (supabase) {
       try {
         const { data, error } = await supabase
-          .from("location")
+          .from("Location")
           .select("*");
         
         if (error) {
-          console.log("Supabase error, using default data:", error.message);
-          locations = campusLocations;
-        } else if (data && data.length > 0) {
+          console.error("❌ Supabase error:", error.message);
+          document.getElementById("infoPanel").innerHTML = `
+            <h3>⚠️ Database Error</h3>
+            <p>${error.message}</p>
+          `;
+          return;
+        }
+        
+        if (data && data.length > 0) {
           locations = data;
           console.log("✅ Loaded", data.length, "locations from Supabase");
         } else {
-          console.log("No Supabase data, using default locations");
-          locations = campusLocations;
+          console.log("⚠️ No locations found in database");
+          document.getElementById("infoPanel").innerHTML = `
+            <h3>⚠️ No Locations</h3>
+            <p>No locations found in database</p>
+          `;
+          return;
         }
       } catch (err) {
-        console.error("Error fetching locations:", err);
-        locations = campusLocations;
+        console.error("❌ Error fetching locations:", err);
+        document.getElementById("infoPanel").innerHTML = `
+          <h3>⚠️ Error</h3>
+          <p>Failed to load locations</p>
+        `;
+        return;
       }
     } else {
-      locations = campusLocations;
+      document.getElementById("infoPanel").innerHTML = `
+        <h3>⚠️ Database Not Connected</h3>
+        <p>Supabase connection failed</p>
+      `;
+      return;
     }
 
     allLocations = locations;
 
     // Display locations on map
     locations.forEach((loc) => {
-      const latLng = [loc.lat, loc.lng];
-      const color = categoryColors[loc.category] || "#3b82f6";
+      const latLng = [loc.Lat, loc.Lng];
+      const color = categoryColors[loc.Category?.toLowerCase()] || categoryColors.default;
       
-      // Create custom icon
+      // Create custom marker icon (red theme)
       const customIcon = L.divIcon({
         className: "custom-marker",
         html: `<div style="
           background: ${color};
-          width: 12px;
-          height: 12px;
+          width: 14px;
+          height: 14px;
           border-radius: 50%;
           border: 3px solid white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
         "></div>`,
-        iconSize: [18, 18],
-        iconAnchor: [9, 9],
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
       });
       
       // Create marker
@@ -219,17 +202,17 @@ document.addEventListener("DOMContentLoaded", () => {
         icon: customIcon,
       }).addTo(map);
 
-      // Bind popup
+      // Bind popup with red theme
       marker.bindPopup(`
         <div style="text-align: center; min-width: 200px;">
-          <b style="font-size: 16px; color: ${color};">${loc.name}</b><br/>
+          <b style="font-size: 16px; color: ${color};">${loc.Name}</b><br/>
           <span style="font-size: 12px; color: #666; text-transform: uppercase;">
-            ${loc.category || 'Location'}
+            ${loc.Category || 'Location'}
           </span><br/>
-          <span style="font-size: 13px; color: #444;">${loc.description || ""}</span>
+          <span style="font-size: 13px; color: #444;">${loc.Description || ""}</span>
           <br/><br/>
           <button 
-            onclick="navigateTo(${loc.lat}, ${loc.lng}, '${loc.name}')"
+            onclick="navigateTo(${loc.Lat}, ${loc.Lng}, '${loc.Name.replace(/'/g, "\\'")}')"
             style="
               padding: 10px 20px;
               background: ${color};
@@ -239,6 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
               cursor: pointer;
               font-weight: 600;
               font-size: 14px;
+              box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
             "
           >
             🧭 Navigate Here
@@ -252,28 +236,28 @@ document.addEventListener("DOMContentLoaded", () => {
           className: "building-label",
           html: `<span style="
             background: white;
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             font-size: 11px;
             font-weight: 700;
             color: #1e293b;
             border-left: 3px solid ${color};
-          ">${loc.name}</span>`,
+          ">${loc.Name}</span>`,
           iconSize: [200, 20],
-          iconAnchor: [100, -8],
+          iconAnchor: [100, -10],
         }),
       }).addTo(map);
 
       allMarkers.push({ marker, location: loc });
     });
 
-    console.log(`✅ Loaded ${locations.length} locations on map`);
+    console.log(`✅ Displayed ${locations.length} locations on map`);
     
     // Update info panel
     document.getElementById("infoPanel").innerHTML = `
       <h3>🏛️ IIITDM Kurnool Navigator</h3>
-      <p>${locations.length} locations loaded. Use search or click markers!</p>
+      <p>${locations.length} locations loaded • Use search or click markers</p>
     `;
   }
 
@@ -296,9 +280,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Filter locations
     const filtered = allLocations.filter(loc => 
-      loc.name.toLowerCase().includes(query) ||
-      (loc.description && loc.description.toLowerCase().includes(query)) ||
-      (loc.category && loc.category.toLowerCase().includes(query))
+      loc.Name.toLowerCase().includes(query) ||
+      (loc.Description && loc.Description.toLowerCase().includes(query)) ||
+      (loc.Category && loc.Category.toLowerCase().includes(query))
     );
 
     if (filtered.length === 0) {
@@ -311,11 +295,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Display results
+    // Display results (red theme)
     searchResults.innerHTML = filtered.map(loc => {
-      const color = categoryColors[loc.category] || "#3b82f6";
+      const color = categoryColors[loc.Category?.toLowerCase()] || categoryColors.default;
       return `
-        <div class="search-result-item" onclick="selectLocation(${loc.lat}, ${loc.lng}, '${loc.name}')">
+        <div class="search-result-item" onclick="selectLocation(${loc.Lat}, ${loc.Lng}, '${loc.Name.replace(/'/g, "\\'")}')">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div style="
               width: 8px;
@@ -324,8 +308,8 @@ document.addEventListener("DOMContentLoaded", () => {
               background: ${color};
             "></div>
             <div style="flex: 1;">
-              <div style="font-weight: 600; font-size: 14px;">${loc.name}</div>
-              <div style="font-size: 12px; color: #666;">${loc.description || loc.category}</div>
+              <div style="font-weight: 600; font-size: 14px;">${loc.Name}</div>
+              <div style="font-size: 12px; color: #666;">${loc.Description || loc.Category}</div>
             </div>
           </div>
         </div>
@@ -352,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Find and open popup
     allMarkers.forEach(({ marker, location }) => {
-      if (location.lat === lat && location.lng === lng) {
+      if (location.Lat === lat && location.Lng === lng) {
         marker.openPopup();
       }
     });
@@ -365,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ===================
-  // ROUTING
+  // ROUTING (RED THEME)
   // ===================
   window.navigateTo = function (lat, lng, name) {
     if (!userLatLng) {
@@ -388,7 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
         draggableWaypoints: false,
         show: false,
         lineOptions: {
-          styles: [{ color: "#2563eb", weight: 6, opacity: 0.8 }],
+          styles: [{ color: "#dc2626", weight: 6, opacity: 0.8 }], // Red route
         },
         createMarker: function () {
           return null;
@@ -398,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update info panel
       document.getElementById("infoPanel").innerHTML = `
         <h3>🧭 Navigating to ${name}</h3>
-        <p>Follow the blue route on the map</p>
+        <p>Follow the red route on the map</p>
       `;
 
       // Fit map to route
