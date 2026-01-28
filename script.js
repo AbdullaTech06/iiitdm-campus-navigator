@@ -1,171 +1,148 @@
-// ================= SUPABASE =================
+/* ================= SUPABASE ================= */
+
 const SUPABASE_URL = "https://iistugxdqonjsrxuvpgs.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpc3R1Z3hkcW9uanNyeHV2cGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE5MzAsImV4cCI6MjA4Mjg1NzkzMH0.QFZKAZnFc-6jrCaOUs0ghAW227OXN1Y2XevOC3BUVX4";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpc3R1Z3hkcW9uanNyeHV2cGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE5MzAsImV4cCI6MjA4Mjg1NzkzMH0.QFZKAZnFc-6jrCaOUs0ghAW227OXN1Y2XevOC3BUVX4";
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-// ================= MAP =================
+/* ================= MAP ================= */
+
 const map = L.map("map", {
-  center: [15.759267, 78.037734],
-  zoom: 17,
-  minZoom: 15,
+  minZoom: 16,
   maxZoom: 19
-});
+}).setView([15.8146, 78.0356], 17);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "© OpenStreetMap"
+  attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
-// ================= GLOBALS =================
-let locations = [];
+/* ================= ICONS ================= */
+
+const locationIcon = L.icon({
+  iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32]
+});
+
+const liveIcon = L.icon({
+  iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-pushpin.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32]
+});
+
+/* ================= MARKERS ================= */
+
 let markers = [];
-let userMarker = null;
-let accuracyCircle = null;
+let liveMarker = null;
 let watchId = null;
 let routingControl = null;
-let destination = null;
+let currentPosition = null;
+let selectedDestination = null;
 
-// ================= LOAD LOCATIONS =================
+/* ================= LOAD LOCATIONS ================= */
+
 async function loadLocations() {
-  const { data, error } = await supabase.from("Location").select("*");
+  const { data, error } = await supabase
+    .from("Location")
+    .select("*");
 
   if (error) {
-    console.error("Supabase error:", error);
+    console.error(error);
     return;
   }
 
-  locations = data;
-
   data.forEach(loc => {
-    if (loc.Lat == null || loc.Lng == null) return;
+    const marker = L.marker([loc.Lat, loc.Lng], {
+      icon: locationIcon
+    })
+      .addTo(map)
+      .bindPopup(`<b>${loc.Name}</b><br>${loc.Description}`);
 
-    const marker = L.circleMarker([loc.Lat, loc.Lng], {
-      radius: 8,
-      color: "#dc2626",
-      fillColor: "#ef4444",
-      fillOpacity: 1
-    }).addTo(map);
+    marker.on("click", () => {
+      selectedDestination = [loc.Lat, loc.Lng];
+    });
 
-    marker.bindPopup(`
-      <b>${loc.Name}</b><br>
-      ${loc.Category || ""}<br>
-      ${loc.Description || ""}<br><br>
-      <button onclick="navigateTo(${loc.Lat}, ${loc.Lng})">
-        🧭 Show Route
-      </button>
-    `);
-
-    markers.push({ marker, loc });
+    markers.push({ name: loc.Name.toLowerCase(), marker });
   });
 }
 
 loadLocations();
 
-// ================= SEARCH =================
-const searchInput = document.getElementById("searchInput");
-const searchResults = document.getElementById("searchResults");
+/* ================= SEARCH ================= */
 
-searchInput.addEventListener("input", () => {
-  const q = searchInput.value.toLowerCase();
-  searchResults.innerHTML = "";
+document.getElementById("search").addEventListener("input", e => {
+  const value = e.target.value.toLowerCase();
 
-  if (!q) {
-    searchResults.style.display = "none";
-    return;
-  }
-
-  locations
-    .filter(l =>
-      l.Name.toLowerCase().includes(q) ||
-      (l.Category || "").toLowerCase().includes(q) ||
-      (l.Description || "").toLowerCase().includes(q)
-    )
-    .forEach(l => {
-      const div = document.createElement("div");
-      div.className = "result";
-      div.textContent = l.Name;
-      div.onclick = () => {
-        map.setView([l.Lat, l.Lng], 18);
-        searchResults.style.display = "none";
-      };
-      searchResults.appendChild(div);
-    });
-
-  searchResults.style.display = "block";
+  markers.forEach(m => {
+    if (m.name.includes(value)) {
+      m.marker.addTo(map);
+    } else {
+      map.removeLayer(m.marker);
+    }
+  });
 });
 
-// ================= LIVE LOCATION =================
-document.getElementById("liveBtn").onclick = () => {
+/* ================= LIVE LOCATION ================= */
+
+document.getElementById("showLive").onclick = () => {
   if (!navigator.geolocation) return;
 
-  watchId = navigator.geolocation.watchPosition(
-    pos => {
-      const latlng = [pos.coords.latitude, pos.coords.longitude];
+  watchId = navigator.geolocation.watchPosition(pos => {
+    currentPosition = [
+      pos.coords.latitude,
+      pos.coords.longitude
+    ];
 
-      if (!userMarker) {
-        userMarker = L.circleMarker(latlng, {
-          radius: 9,
-          color: "#7f1d1d",
-          fillColor: "#ef4444",
-          fillOpacity: 1
-        }).addTo(map);
+    if (!liveMarker) {
+      liveMarker = L.marker(currentPosition, {
+        icon: liveIcon
+      }).addTo(map);
+    } else {
+      liveMarker.setLatLng(currentPosition);
+    }
 
-        accuracyCircle = L.circle(latlng, {
-          radius: pos.coords.accuracy,
-          color: "#ef4444",
-          fillOpacity: 0.2
-        }).addTo(map);
-      } else {
-        userMarker.setLatLng(latlng);
-        accuracyCircle.setLatLng(latlng);
-        accuracyCircle.setRadius(pos.coords.accuracy);
-      }
-
-      if (destination) updateRoute(latlng, destination);
-    },
-    err => console.warn(err),
-    { enableHighAccuracy: true }
-  );
+    if (routingControl && selectedDestination) {
+      routingControl.setWaypoints([
+        L.latLng(currentPosition),
+        L.latLng(selectedDestination)
+      ]);
+    }
+  });
 };
 
-document.getElementById("stopLiveBtn").onclick = () => {
-  if (watchId) navigator.geolocation.clearWatch(watchId);
-  watchId = null;
-
-  if (userMarker) map.removeLayer(userMarker);
-  if (accuracyCircle) map.removeLayer(accuracyCircle);
-
-  userMarker = null;
-  accuracyCircle = null;
+document.getElementById("cancelLive").onclick = () => {
+  if (watchId) {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+  if (liveMarker) {
+    map.removeLayer(liveMarker);
+    liveMarker = null;
+  }
 };
 
-// ================= ROUTING =================
-window.navigateTo = (lat, lng) => {
-  destination = [lat, lng];
-  if (!userMarker) return alert("Enable live location first");
-  updateRoute(userMarker.getLatLng(), destination);
-};
+/* ================= ROUTING ================= */
 
-function updateRoute(start, end) {
-  if (routingControl) map.removeControl(routingControl);
+document.getElementById("showRoute").onclick = () => {
+  if (!currentPosition || !selectedDestination) return;
 
   routingControl = L.Routing.control({
-    waypoints: [start, end],
+    waypoints: [
+      L.latLng(currentPosition),
+      L.latLng(selectedDestination)
+    ],
     addWaypoints: false,
     draggableWaypoints: false,
-    lineOptions: {
-      styles: [{ color: "#dc2626", weight: 5 }]
-    },
-    show: false
+    fitSelectedRoutes: true
   }).addTo(map);
-}
+};
 
-document.getElementById("cancelRouteBtn").onclick = () => {
-  if (routingControl) map.removeControl(routingControl);
-  routingControl = null;
-  destination = null;
+document.getElementById("cancelRoute").onclick = () => {
+  if (routingControl) {
+    map.removeControl(routingControl);
+    routingControl = null;
+  }
 };
