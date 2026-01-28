@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Campus Navigator</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IIITDM Campus Navigator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Leaflet -->
   <link
@@ -12,37 +11,35 @@
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
-  <!-- Routing -->
+  <!-- Leaflet Routing -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
   />
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
-</head>
+  <!-- Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
+  <link rel="stylesheet" href="style.css" />
+</head>
 <body>
-  <div id="top-bar">
-    <input id="search" type="text" placeholder="Search location by name..." />
-    <button id="showLive">Show Live</button>
-    <button id="cancelLive">Cancel Live</button>
-    <button id="showRoute">Show Route</button>
-    <button id="cancelRoute">Cancel Route</button>
+
+  <div class="top-bar">
+    <input id="searchInput" type="text" placeholder="Search location..." />
+    <div id="searchResults"></div>
+  </div>
+
+  <div class="controls">
+    <button id="liveBtn">Show Live Location</button>
+    <button id="stopLiveBtn">Cancel Live</button>
+    <button id="cancelRouteBtn">Cancel Route</button>
   </div>
 
   <div id="map"></div>
 
-  <!-- Leaflet -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Routing -->
-  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <!-- JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
