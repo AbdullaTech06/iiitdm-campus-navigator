@@ -5,15 +5,15 @@
   font-family: system-ui, sans-serif;
 }
 
-/* REQUIRED FOR LEAFLET */
+/* CRITICAL FOR LEAFLET */
 html, body {
   height: 100%;
   width: 100%;
 }
 
 #map {
-  position: absolute;
-  inset: 0;
+  height: 100%;
+  width: 100%;
 }
 
 /* Search bar */
@@ -29,22 +29,20 @@ html, body {
 
 #searchInput {
   width: 100%;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 10px;
+  border-radius: 10px;
   border: 2px solid #dc2626;
-  outline: none;
 }
 
 #searchResults {
-  margin-top: 6px;
   background: white;
-  border-radius: 12px;
-  max-height: 240px;
-  overflow-y: auto;
+  margin-top: 5px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .result-item {
-  padding: 10px;
+  padding: 8px;
   cursor: pointer;
 }
 
@@ -52,16 +50,15 @@ html, body {
   background: #fee2e2;
 }
 
-/* Controls */
+/* Buttons */
 .controls {
   position: absolute;
-  bottom: 16px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
+  z-index: 1000;
 }
 
 button {
@@ -69,15 +66,6 @@ button {
   color: white;
   border: none;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
-}
-
-button:hover {
-  background: #b91c1c;
-}
-
-/* Hide routing panel */
-.leaflet-routing-container {
-  display: none !important;
 }
