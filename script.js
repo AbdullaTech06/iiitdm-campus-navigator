@@ -1,10 +1,16 @@
-// ================== SUPABASE ==================
-const supabaseUrl = "https://iistugxdqonjsrxuvpgs.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpc3R1Z3hkcW9uanNyeHV2cGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE5MzAsImV4cCI6MjA4Mjg1NzkzMH0.QFZKAZnFc-6jrCaOUs0ghAW227OXN1Y2XevOC3BUVX4";
+console.log("Script loaded");
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+// ================= SUPABASE =================
+const SUPABASE_URL = "https://iistugxdqonjsrxuvpgs.supabase.co";
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpc3R1Z3hkcW9uanNyeHV2cGdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE5MzAsImV4cCI6MjA4Mjg1NzkzMH0.QFZKAZnFc-6jrCaOUs0ghAW227OXN1Y2XevOC3BUVX4";
 
-// ================== MAP ==================
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+// ================= MAP =================
 const map = L.map("map", {
   center: [15.759267, 78.037734],
   zoom: 17,
@@ -16,7 +22,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap"
 }).addTo(map);
 
-// ================== GLOBALS ==================
+// ================= GLOBALS =================
 let locations = [];
 let markers = [];
 let userMarker = null;
@@ -25,11 +31,14 @@ let watchId = null;
 let routingControl = null;
 let destination = null;
 
-// ================== FETCH LOCATIONS ==================
+// ================= LOAD LOCATIONS =================
 async function loadLocations() {
-  const { data, error } = await supabase.from("Location").select("*");
+  const { data, error } = await supabase
+    .from("Location")
+    .select("Name,Lat,Lng,Category,Description");
 
   if (error) {
+    console.error(error);
     alert("Failed to load locations");
     return;
   }
@@ -38,32 +47,40 @@ async function loadLocations() {
   addMarkers();
 }
 
+// ================= MARKERS =================
 function addMarkers() {
   markers.forEach(m => map.removeLayer(m));
   markers = [];
 
   locations.forEach(loc => {
-    const marker = L.circleMarker([loc.Lat, loc.Lng], {
+    const lat = Number(loc.Lat);
+    const lng = Number(loc.Lng);
+
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    const marker = L.circleMarker([lat, lng], {
       radius: 8,
       color: "#dc2626",
       fillColor: "#ef4444",
-      fillOpacity: 0.9
+      fillOpacity: 1
     }).addTo(map);
 
     marker.bindPopup(`
-      <b>${loc.Name}</b><br/>
-      ${loc.Category}<br/>
-      ${loc.Description}<br/><br/>
-      <button onclick="navigateTo(${loc.Lat}, ${loc.Lng})">
+      <b>${loc.Name}</b><br>
+      ${loc.Category}<br>
+      ${loc.Description}<br><br>
+      <button onclick="navigateTo(${lat}, ${lng})">
         🚗 Show Route
       </button>
     `);
 
     markers.push(marker);
   });
+
+  console.log("Markers loaded:", markers.length);
 }
 
-// ================== SEARCH ==================
+// ================= SEARCH =================
 const searchInput = document.getElementById("searchInput");
 const searchResults = document.getElementById("searchResults");
 
@@ -84,14 +101,14 @@ searchInput.addEventListener("input", () => {
       div.className = "result-item";
       div.textContent = l.Name;
       div.onclick = () => {
-        map.flyTo([l.Lat, l.Lng], 18);
+        map.flyTo([Number(l.Lat), Number(l.Lng)], 18);
         searchResults.innerHTML = "";
       };
       searchResults.appendChild(div);
     });
 });
 
-// ================== LIVE LOCATION ==================
+// ================= LIVE LOCATION =================
 document.getElementById("liveBtn").onclick = () => {
   if (!navigator.geolocation) {
     alert("Geolocation not supported");
@@ -135,7 +152,7 @@ document.getElementById("stopLiveBtn").onclick = () => {
   accuracyCircle = null;
 };
 
-// ================== ROUTING ==================
+// ================= ROUTING =================
 window.navigateTo = (lat, lng) => {
   destination = [lat, lng];
 
@@ -168,5 +185,5 @@ document.getElementById("cancelRouteBtn").onclick = () => {
   destination = null;
 };
 
-// ================== INIT ==================
+// ================= INIT =================
 loadLocations();
