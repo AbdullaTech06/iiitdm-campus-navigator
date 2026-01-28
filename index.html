@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Campus Navigation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IIITDM Campus Navigator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Leaflet -->
   <link
@@ -17,32 +17,29 @@
     href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
   />
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div id="map"></div>
-
-  <!-- Bottom Control Panel -->
-  <div class="panel">
-    <input id="search" type="text" placeholder="Search location..." />
-
-    <div class="chips" id="categoryChips"></div>
-
-    <div class="buttons">
-      <button onclick="showLive()">Show Live</button>
-      <button onclick="cancelLive()">Cancel Live</button>
-      <button onclick="cancelRoute()">Cancel Route</button>
-    </div>
+  <!-- Search -->
+  <div id="searchBox">
+    <input id="searchInput" type="text" placeholder="Search campus locations…" />
+    <div id="searchResults"></div>
   </div>
 
-  <!-- Leaflet -->
+  <!-- Controls -->
+  <div id="controls">
+    <button id="liveBtn">📍 Show Live</button>
+    <button id="stopLiveBtn">❌ Cancel Live</button>
+    <button id="cancelRouteBtn">❌ Cancel Route</button>
+  </div>
+
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Routing -->
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="script.js"></script>
