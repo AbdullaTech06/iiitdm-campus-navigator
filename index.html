@@ -2,40 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>IIITDM Campus Navigator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Navigation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 
   <!-- Routing -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
+  />
 
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <div class="top-bar">
-    <input id="searchInput" placeholder="Search buildings, labs, hostels..." />
-    <div id="searchResults"></div>
-  </div>
-
-  <div class="controls">
-    <button id="liveBtn">📍 Show Live</button>
-    <button id="stopLiveBtn">❌ Cancel Live</button>
-    <button id="cancelRouteBtn">❌ Cancel Route</button>
-  </div>
 
   <div id="map"></div>
 
-  <!-- JS -->
+  <!-- Bottom Control Panel -->
+  <div class="panel">
+    <input id="search" type="text" placeholder="Search location..." />
+
+    <div class="chips" id="categoryChips"></div>
+
+    <div class="buttons">
+      <button onclick="showLive()">Show Live</button>
+      <button onclick="cancelLive()">Cancel Live</button>
+      <button onclick="cancelRoute()">Cancel Route</button>
+    </div>
+  </div>
+
+  <!-- Leaflet -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Routing -->
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
-  <!-- IMPORTANT: defer -->
-  <script src="script.js" defer></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
